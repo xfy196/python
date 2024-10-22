@@ -2,27 +2,31 @@ import requests
 import execjs
 import execjs
 
-# 读取 crypto-js.min.js 文件内容
-with open("crypto-js.min.js", "r", encoding="utf-8") as f:
-    crypto_js = f.read()
 
-# 读取 script.js 文件内容
-with open("script.js", "r", encoding="utf-8") as f:
-    script_js = f.read()
 
-crypto_js = (
-    "var CryptoJS = (function(){var module={};"
-    + crypto_js
-    + "; return module.exports;})();"
-)
-# 合并两个脚本的内容
-combined_script = crypto_js + "\n" + script_js
+def getEncKey():
+    # 读取 crypto-js.min.js 文件内容
+    with open("crypto-js.min.js", "r", encoding="utf-8") as f:
+        crypto_js = f.read()
 
-# 使用 execjs 执行合并后的脚本
-context = execjs.compile(combined_script)
+    # 读取 script.js 文件内容
+    with open("script.js", "r", encoding="utf-8") as f:
+        script_js = f.read()
 
-# 调用你想执行的函数或代码
-encKey = context.call("getResCode")
+    crypto_js = (
+        "var CryptoJS = (function(){var module={};"
+        + crypto_js
+        + "; return module.exports;})();"
+    )
+    # 合并两个脚本的内容
+    combined_script = crypto_js + "\n" + script_js
+
+    # 使用 execjs 执行合并后的脚本
+    context = execjs.compile(combined_script)
+
+    # 调用你想执行的函数或代码
+    encKey = context.call("getResCode")
+    return encKey
 
 cookies = {
     "routeId": ".uc1",
@@ -34,7 +38,7 @@ cookies = {
 
 headers = {
     "Accept": "application/json, text/javascript, */*; q=0.01",
-    "Accept-EncKey": encKey,
+    "Accept-EncKey": getEncKey(),
     "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
     "Connection": "keep-alive",
     # 'Content-Length': '0',
